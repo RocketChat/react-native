@@ -700,6 +700,7 @@ export type Props = $ReadOnly<{|
 
 type ImperativeMethods = $ReadOnly<{|
   clear: () => void,
+  setTextAndSelection: () => void,
   isFocused: () => boolean,
   getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
 |}>;
@@ -947,6 +948,18 @@ function InternalTextInput(props: Props): React.Node {
     }
   }
 
+  function setTextAndSelection(_text, _selection): void {
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        _text,
+        _selection?.start ?? -1,
+        _selection?.end ?? -1,
+      );
+    }
+  }
+
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
     return TextInputState.currentlyFocusedInput() === inputRef.current;
@@ -985,6 +998,7 @@ function InternalTextInput(props: Props): React.Node {
         */
       if (ref) {
         ref.clear = clear;
+        ref.setTextAndSelection = setTextAndSelection;
         ref.isFocused = isFocused;
         ref.getNativeRef = getNativeRef;
       }
